@@ -4,6 +4,13 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 
+#define millisNoteDelay 4
+#define midiNoteOn 144
+#define midiNoteOff 128
+#define voiceMidiChannel 0
+#define midiVelocity 100
+
+
 /*
  * A simple class for sending notes though the midi interface.
  * 
@@ -18,14 +25,8 @@
  */
 
 class MidiOutput {
-    private:
-        const int millisNoteDelay = 4;
-        const byte midiNoteOn = 144;
-        const byte midiNoteOff = 128;
-        const int voiceMidiChannel = 0;
-        const int midiVelocity = 100;
-        
-        long startTime;
+    private:        
+        unsigned long startTime;
         int activeNote;
         SoftwareSerial* midi; // RX, TX
         void command(int command, int note, int velocity);
@@ -34,7 +35,6 @@ class MidiOutput {
         MidiOutput();
         void noteOn(int note);
         void noteOff();
-        void idle();        
 };
 
 #endif

@@ -3,7 +3,7 @@
 MidiOutput::MidiOutput() {
     activeNote = 0;
     startTime = 0;
-    midi = new SoftwareSerial(8, 9);  // RX=8, TX=9
+    midi = new SoftwareSerial(12, 9);  // RX=12, TX=9
     midi->begin(31250);
 }
 
@@ -15,6 +15,13 @@ void MidiOutput::noteOn(int note) {
        activeNote = note;
        startTime = millis();      
    }
+
+   // Check if we have a waiting note to send.
+   if (startTime > 0 && (millis() > startTime + millisNoteDelay)) {
+      // After the timeout, we actually send the noteOn.
+      command(midiNoteOn, activeNote, midiVelocity);  // Send the noteOn.
+      startTime = 0;
+   }
 }
 
 /*
@@ -25,19 +32,6 @@ void MidiOutput::noteOff() {
    if (activeNote > 0 && startTime == 0) {
       command(midiNoteOff, activeNote, midiVelocity);
       activeNote = 0;
-   }
-}
-
-/*
- * This will be called from the idle loop in order to find out if the note delay
- * has expired and the noteOn can be sent.
- */
-void MidiOutput::idle() {
-   // Check if we have a waiting note to send.
-   if (startTime > 0 && (millis() > startTime + millisNoteDelay)) {
-      // After the timeout, we actually send the noteOn.
-      command(midiNoteOn, activeNote, midiVelocity);  // Send the noteOn.
-      startTime = 0;
    }
 }
 
